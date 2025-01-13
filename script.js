@@ -1,3 +1,4 @@
+
 // Resources, Recipes, and Inventory Data
 const resources = {
   wood: 0,
@@ -20,16 +21,19 @@ const inventoryList = document.getElementById("inventory-list");
 
 // Helper Function: Update Resources UI
 function updateResources() {
-  resourceList.innerHTML = "";
+  resourceList.innerHTML = ""; // Clear existing resource UI
   for (const [resource, amount] of Object.entries(resources)) {
     const div = document.createElement("div");
     div.textContent = `${resource}: ${amount}`;
+
     const gatherButton = document.createElement("button");
     gatherButton.textContent = `Gather ${resource}`;
     gatherButton.onclick = () => {
       resources[resource]++;
       updateResources();
+      updateRecipes(); // Update crafting availability when resources change
     };
+
     div.appendChild(gatherButton);
     resourceList.appendChild(div);
   }
@@ -37,10 +41,17 @@ function updateResources() {
 
 // Helper Function: Update Recipes UI
 function updateRecipes() {
-  recipeList.innerHTML = "";
+  recipeList.innerHTML = ""; // Clear existing recipe UI
   recipes.forEach((recipe) => {
     const div = document.createElement("div");
     div.textContent = recipe.name;
+
+    const costText = Object.entries(recipe.cost)
+      .map(([resource, cost]) => `${cost} ${resource}`)
+      .join(", ");
+    const costInfo = document.createElement("p");
+    costInfo.textContent = `Cost: ${costText}`;
+    div.appendChild(costInfo);
 
     const craftButton = document.createElement("button");
     craftButton.textContent = "Craft";
@@ -57,7 +68,7 @@ function updateRecipes() {
 
 // Helper Function: Update Inventory UI
 function updateInventory() {
-  inventoryList.innerHTML = "";
+  inventoryList.innerHTML = ""; // Clear existing inventory UI
   inventory.forEach((item) => {
     const div = document.createElement("div");
     div.textContent = item;
@@ -68,17 +79,22 @@ function updateInventory() {
 // Check if Player Can Craft a Recipe
 function canCraft(recipe) {
   for (const [resource, cost] of Object.entries(recipe.cost)) {
-    if (resources[resource] < cost) return false;
+    if (resources[resource] < cost) return false; // Not enough resources
   }
   return true;
 }
 
 // Craft an Item
 function craftItem(recipe) {
+  // Deduct resources
   for (const [resource, cost] of Object.entries(recipe.cost)) {
     resources[resource] -= cost;
   }
+
+  // Add crafted item to inventory
   inventory.push(recipe.name);
+
+  // Update all UI elements
   updateResources();
   updateInventory();
   updateRecipes();
