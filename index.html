@@ -4,36 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crafting Game</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+    button {
+      margin-left: 10px;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Crafting Adventure</h1>
-    <p>Gather resources and craft items to progress!</p>
-  </header>
-
-  <main>
-    <section id="resources">
-      <h2>Resources</h2>
-      <div id="resource-list">
-        <!-- Resources will be dynamically added here -->
-      </div>
-    </section>
-
-    <section id="crafting">
-      <h2>Crafting</h2>
-      <div id="recipe-list">
-        <!-- Recipes will be dynamically added here -->
-      </div>
-    </section>
-
-    <section id="inventory">
-      <h2>Inventory</h2>
-      <div id="inventory-list">
-        <!-- Inventory items will be dynamically added here -->
-      </div>
-    </section>
-  </main>
+  <h1>Crafting Game</h1>
+  
+  <div id="resource-list" class="section">
+    <h2>Resources</h2>
+  </div>
+  
+  <div id="recipe-list" class="section">
+    <h2>Recipes</h2>
+  </div>
+  
+  <div id="inventory-list" class="section">
+    <h2>Inventory</h2>
+  </div>
 
   <script src="script.js"></script>
 </body>
