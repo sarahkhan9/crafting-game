@@ -33,8 +33,11 @@ function updateResources() {
     const gatherButton = document.createElement("button");
     gatherButton.textContent = `Gather ${resource}`;
     gatherButton.onclick = () => {
-      resources[resource]++;
-      updateResources();
+  resources[resource]++;
+  gatherSound.play(); // Play gather sound
+  updateResources();
+  updateRecipes();
+};
       updateRecipes(); // Update crafting availability when resources change
     };
 
@@ -67,8 +70,9 @@ function updateRecipes() {
       craftButton.disabled = true;
     }
 
-    craftButton.onclick = () => {
-      craftItem(recipe);
+   craftButton.onclick = () => {
+  craftItem(recipe);
+  craftSound.play(); // Play crafting sound
     };
 
     div.appendChild(craftButton);
