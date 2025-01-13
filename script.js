@@ -1,3 +1,8 @@
+
+// Load sound files
+const gatherSound = new Audio("gather.mp3");
+const craftSound = new Audio("craft.mp3");
+
 // Resources, Recipes, and Inventory Data
 const resources = {
   wood: 0,
