@@ -1,37 +1,77 @@
+index.html
+├── craftling.mp3
+└── documents
+
+├── gather.mp3
+└── documents
+    
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crafting Game</title>
+  <title>Resource Game</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
+      text-align: center;
+      margin: 20px;
     }
-    .section {
-      margin-bottom: 30px;
+    .resources, .inventory, .recipes {
+      margin: 20px 0;
     }
     button {
-      margin-left: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: gray;
+      cursor: not-allowed;
+    }
+    /* Animation styles */
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+    .bounce {
+      animation: bounce 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
     }
   </style>
 </head>
 <body>
-  <h1>Crafting Game</h1>
-  
-  <div id="resource-list" class="section">
+  <h1>Resource Game</h1>
+  <div class="resources">
     <h2>Resources</h2>
+    <div id="resources"></div>
   </div>
-  
-  <div id="recipe-list" class="section">
+  <div class="recipes">
     <h2>Recipes</h2>
+    <div id="recipes"></div>
+    <button id="craftButton" disabled>Craft</button>
   </div>
-  
-  <div id="inventory-list" class="section">
+  <div class="inventory">
     <h2>Inventory</h2>
+    <div id="inventory"></div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
+
