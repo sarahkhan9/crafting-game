@@ -1,125 +1,102 @@
 
-// Load sound files
+// Game state
+const resources = { wood: 0, stone: 0, iron: 0 };
+const recipes = [
+  { name: "Axe", cost: { wood: 3, stone: 2 } },
+  { name: "Pickaxe", cost: { wood: 2, iron: 4 } },
+  { name: "Hammer", cost: { wood: 5, stone: 3, iron: 2 } }
+];
+let selectedRecipe = null;
+const inventory = [];
+
+// Sound effects
 const gatherSound = new Audio("gather.mp3");
 const craftSound = new Audio("craft.mp3");
 
-// Resources, Recipes, and Inventory Data
-const resources = {
-  wood: 0,
-  stone: 0,
-  iron: 0
-};
+// DOM elements
+const resourcesDiv = document.getElementById("resources");
+const recipesDiv = document.getElementById("recipes");
+const inventoryDiv = document.getElementById("inventory");
+const craftButton = document.getElementById("craftButton");
 
-const recipes = [
-  { name: "Stone Axe", cost: { wood: 2, stone: 1 } },
-  { name: "Iron Pickaxe", cost: { wood: 3, iron: 2 } },
-  { name: "Campfire", cost: { wood: 5, stone: 3 } }
-];
-
-const inventory = [];
-
-// DOM Elements
-const resourceList = document.getElementById("resource-list");
-const recipeList = document.getElementById("recipe-list");
-const inventoryList = document.getElementById("inventory-list");
-
-// Helper Function: Update Resources UI
+// Update UI for resources
 function updateResources() {
-  resourceList.innerHTML = ""; // Clear existing resource UI
-  for (const [resource, amount] of Object.entries(resources)) {
-    const div = document.createElement("div");
-    div.textContent = `${resource}: ${amount}`;
-
-    const gatherButton = document.createElement("button");
-    gatherButton.textContent = `Gather ${resource}`;
-    gatherButton.onclick = () => {
-  resources[resource]++;
-  gatherSound.play(); // Play gather sound
-  updateResources();
-  updateRecipes();
-};
-      updateRecipes(); // Update crafting availability when resources change
+  resourcesDiv.innerHTML = "";
+  Object.keys(resources).forEach(resource => {
+    const button = document.createElement("button");
+    button.textContent = `${resource}: ${resources[resource]}`;
+    button.onclick = () => {
+      resources[resource]++;
+      gatherSound.play(); // Play gather sound
+      button.classList.add("bounce"); // Bounce animation
+      setTimeout(() => button.classList.remove("bounce"), 300);
+      updateResources();
+      updateRecipes();
     };
-
-    div.appendChild(gatherButton);
-    resourceList.appendChild(div);
-  }
+    resourcesDiv.appendChild(button);
+  });
 }
 
-// Helper Function: Update Recipes UI
+// Update UI for recipes
 function updateRecipes() {
-  recipeList.innerHTML = ""; // Clear existing recipe UI
-  recipes.forEach((recipe) => {
+  recipesDiv.innerHTML = "";
+  recipes.forEach(recipe => {
     const div = document.createElement("div");
-    div.textContent = recipe.name;
+    const canCraft = Object.keys(recipe.cost).every(
+      resource => resources[resource] >= recipe.cost[resource]
+    );
 
-    const costText = Object.entries(recipe.cost)
-      .map(([resource, cost]) => `${cost} ${resource}`)
-      .join(", ");
-    const costInfo = document.createElement("p");
-    costInfo.textContent = `Cost: ${costText}`;
-    div.appendChild(costInfo);
+    div.textContent = `${recipe.name} (Cost: ${Object.entries(recipe.cost)
+      .map(([resource, amount]) => `${amount} ${resource}`)
+      .join(", ")})`;
 
-    const craftButton = document.createElement("button");
-    craftButton.textContent = "Craft";
+    div.style.color = canCraft ? "green" : "red";
+    div.onclick = () => {
+      selectedRecipe = recipe;
+      updateRecipes();
+      craftButton.disabled = !canCraft;
+    };
 
-    // Check if the button should be enabled or disabled
-    if (canCraft(recipe)) {
-      craftButton.disabled = false;
-    } else {
-      craftButton.disabled = true;
+    if (recipe === selectedRecipe) {
+      div.style.fontWeight = "bold";
     }
 
-   craftButton.onclick = () => {
-  craftItem(recipe);
-  craftSound.play(); // Play crafting sound
-    };
-
-    div.appendChild(craftButton);
-    recipeList.appendChild(div);
+    recipesDiv.appendChild(div);
   });
 }
 
-// Helper Function: Update Inventory UI
+// Craft the selected recipe
+craftButton.onclick = () => {
+  if (selectedRecipe) {
+    Object.keys(selectedRecipe.cost).forEach(resource => {
+      resources[resource] -= selectedRecipe.cost[resource];
+    });
+    inventory.push(selectedRecipe.name);
+    craftSound.play(); // Play crafting sound
+    updateResources();
+    updateRecipes();
+    updateInventory();
+  }
+};
+
+// Update UI for inventory
 function updateInventory() {
-  inventoryList.innerHTML = ""; // Clear existing inventory UI
-  inventory.forEach((item) => {
+  inventoryDiv.innerHTML = "";
+  inventory.forEach((item, index) => {
     const div = document.createElement("div");
     div.textContent = item;
-    inventoryList.appendChild(div);
+
+    // Add fade-in animation for the newest item
+    if (index === inventory.length - 1) {
+      div.classList.add("fade-in");
+    }
+
+    inventoryDiv.appendChild(div);
   });
 }
 
-// Check if Player Can Craft a Recipe
-function canCraft(recipe) {
-  for (const [resource, cost] of Object.entries(recipe.cost)) {
-    const available = resources[resource] || 0; // Default to 0 if resource doesn't exist
-    if (available < cost) return false; // Not enough resources
-  }
-  return true;
-}
+// Initialize game
+updateResources();
+updateRecipes();
+updateInventory();
 
-// Craft an Item
-function craftItem(recipe) {
-  // Deduct resources
-  for (const [resource, cost] of Object.entries(recipe.cost)) {
-    resources[resource] -= cost;
-  }
-
-  // Add crafted item to inventory
-  inventory.push(recipe.name);
-
-  // Update all UI elements
-  updateResources();
-  updateInventory();
-  updateRecipes();
-}
-
-// Initialize Game
-function initGame() {
-  updateResources();
-  updateRecipes();
-  updateInventory();
-}
-
-initGame();
